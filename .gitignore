@@ -1,12 +1,3 @@
-!.emacs.d/
-.emacs.d/*
-
-# Private directory
-!.emacs.d/private/
-!.emacs.d/private/README.md
-!.emacs.d/private/snippets/README.md
-!.emacs.d/private/local/README.md
-!.emacs.d/games/
-
+.emacs.d
 .zshrc
 
