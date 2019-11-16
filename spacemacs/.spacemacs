@@ -41,20 +41,21 @@ values."
      (ranger :variables
              ranger-show-preview t)
      docker
+     ;; octave
+     ;; rust
+     ;; ipython-notebook
      pdf-tools
-     octave
+     docker
      csv
      html
-     rust
      python
-     ipython-notebook
      yaml
      javascript
-     ivy
+     helm
      haskell
      (auto-completion :variables
-                      auto-completion-enable-help-tooltip t
-                      auto-completion-enable-snippets-in-popup t)
+                      auto-completion-enable-help-tooltip nil
+                      auto-completion-enable-snippets-in-popup nil)
      better-defaults
      emacs-lisp
      ibuffer
@@ -78,9 +79,8 @@ values."
             latex-enable-folding t)
      (osx :variables
           osx-use-option-as-meta t
-          mac-right-option-modifier nil
           osx-dictionary-dictionary-choice "English")
-     ;; syntax-checking
+     syntax-checking
      ;; version-control
      )
 
@@ -88,7 +88,10 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(polymode
+   dotspacemacs-additional-packages '(fold-this
+                                      nord-theme
+                                      doom-themes
+                                      polymode
                                       poly-R
                                       poly-markdown
                                       poly-noweb
@@ -97,6 +100,7 @@ values."
                                       nord-theme
                                       doom-themes
                                       olivetti
+                                      focus
                                       (px :location (recipe :fetcher github :repo "aaptel/preview-latex")))
    ;; a list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -173,7 +177,18 @@ values."
    dotspacemacs-themes '(nord
                          spacemacs-light
                          spacemacs-dark
-                         soft-stone)
+                         white-sand
+                         soft-stone
+                         madhat2r
+                         spacemacs-dark)
+   ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
+   ;; `all-the-icons', `custom', `vim-powerline' and `vanilla'. The first three
+   ;; are spaceline themes. `vanilla' is the default Emacs mode-line. `custom'
+   ;; is a user defined theme, refer to DOCUMENTATION.org for more info on how
+   ;; to create your own spaceline theme. Value can be a symbol or list with
+   ;; additional properties.
+   ;; (default '(spacemacs :seperator wave :seperator-scale 1.5))
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -269,7 +284,7 @@ values."
    dotspacemacs-fullscreen-at-startup nil
    ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
-   dotspacemacs-fullscreen-use-non-native nil
+   dotspacemacs-fullscreen-use-non-native t
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
@@ -277,11 +292,11 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-active-transparency 90
+   dotspacemacs-active-transparency 0
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-inactive-transparency 90
+   dotspacemacs-inactive-transparency 0
    ;; If non nil show the titles of transient states. (default t)
    dotspacemacs-show-transient-state-title t
    ;; If non nil show the color guide hint for transient state keys. (default t)
@@ -346,19 +361,24 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; Configuration for treemacs
+  (add-hook 'treemacs-mode-hook 'treemacs--disable-fringe-indicator)
+
   ;; Settings for org-mode
   (with-eval-after-load 'org
     ;; Load org-setting here
     (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
-    (setq org-ref-default-bibliography '("/Users/therimalaya/Dropbox/Papers/BibTex/03-Prediction-Comparison.bib")
-          org-ref-pdf-directory "/Users/therimalaya/Dropbox/Papers/References/"
-          bibtex-completion-pdf-field "file"
-          bibtex-completion-format-citation-functions
-          '((default . bibtex-completion-format-citation-default)
-            (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
-            (latex-mode . bibtex-completion-format-citation-cite)
-            (org-mode . bibtex-completion-format-citation-org-link-to-PDF))
-          )
+    ;; (setq org-ref-default-bibliography '("/Users/therimalaya/Dropbox/Papers/BibTex/03-Prediction-Comparison.bib")
+    (setq
+     org-ref-default-bibliography '("~/Dropbox/Papers/00-Thesis/References.bib")
+     org-ref-pdf-directory "/Users/therimalaya/Dropbox/Papers/References/"
+     bibtex-completion-pdf-field "file"
+     bibtex-completion-format-citation-functions
+     '((default . bibtex-completion-format-citation-default)
+       (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+       (latex-mode . bibtex-completion-format-citation-cite)
+       (org-mode . bibtex-completion-format-citation-org-link-to-PDF))
+     )
     (setq org-startup-indented t)
     (org-babel-do-load-languages
      'org-babel-load-languages
@@ -367,7 +387,7 @@ you should place your code here."
     )
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
 
-  ;; Initilize outline minor mode along with AucTex (LaTeX) mode
+  ;; Initialize outline minor mode along with AucTex (LaTeX) mode
   (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
 
   ;; Making PDF-tool as default PDF viewer
@@ -386,11 +406,6 @@ you should place your code here."
 
   ;; open r-markdown in markdown mode
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . markdown-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.rmd\\'" . markdown-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.Snw" . poly-noweb+r-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.Rnw" . poly-noweb+r-mode))
   (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
   ;; Custom function to insert new chunk in r-markdown mode
@@ -403,8 +418,39 @@ you should place your code here."
       (insert "```\n")
       (previous-line)))
 
+  ;; Settings for Ranger
+  (setq ranger-show-hidden t)
+  (ranger-override-dired-mode t)
+
+  ;; Fix problem with expansion with mac keyboard
+  (setq-default mac-right-option-modifier nil)
+0
+  ;; Fix for completion when sidebar is open
+  (with-eval-after-load "helm"
+    (defun helm-persistent-action-display-window (&optional split-onewindow)
+      "Return the window that will be used for persistent action.
+        If SPLIT-ONEWINDOW is non-`nil' window is split in persistent action."
+      (with-helm-window
+        (setq helm-persistent-action-display-window (get-mru-window)))))
+
   ;; Key-binding for inserting new rmarkdown chunk
   (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "iC" 'rmarkdown-new-chunk)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "np" 'markdown-narrow-to-page)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "nb" 'markdown-narrow-to-block)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "ns" 'markdown-narrow-to-subtree)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "nr" 'narrow-to-region)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "nf" 'narrow-to-defun)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "nw" 'widen)
+
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "lj" 'markdown-move-list-item-down)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "lk" 'markdown-move-list-item-up)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "lh" 'markdown-promote-list-item)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "ll" 'markdown-demote-list-item)
+
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "hj" 'markdown-move-subtree-down)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "hk" 'markdown-move-subtree-item-up)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "hh" 'markdown-promote-subtree)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "hl" 'markdown-demote-subtree)
 
   ;; add outline minor mode in markdown-mode
   (add-hook 'markdown-mode-hook 'outline-minor-mode)
@@ -441,10 +487,39 @@ you should place your code here."
 
   ;; Olivetti mode keybinding
   (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "to" 'olivetti-mode)
+  ;; (add-hook 'poly-markdown+r-mode-hook (lambda() (olivetti-mode t)))
+  (set 'olivetti-minimum-body-width 90)
   ;; (setq-mode-local 'markdown-mode 'olivetti-body-width 90)
 
   ;; Make ranger default
   (ranger-override-dired-mode t)
+
+  ;; Prettify mode
+  (global-prettify-symbols-mode 1)
+  (load-file "~/.emacs.d/private/fira-code-hack.el")
+
+  ;; Fold-this bindings
+  (spacemacs/set-leader-keys "of" 'fold-this)
+
+  ;; Tab space for different modes
+  (setq default-tab-width 2)
+
+  ;; setting up common lisp path
+  (setq inferior-lisp-program "/usr/local/bin/clisp")
+
+  ;; Fix for evil search trigger
+  (defun kill-minibuffer ()
+    (interactive)
+    (when (windowp (active-minibuffer-window))
+      (evil-ex-search-exit)))
+
+  (add-hook 'mouse-leave-buffer-hook #'kill-minibuffer)
+
+  ;; Fix Issue with Non-character input-error warning
+  ;; https://github.com/syl20bnr/spacemacs/issues/5554
+  (defun ask-user-about-lock (file other-user)
+    "A value of t says to grab the lock on the file."
+    t)
 
   )
 
