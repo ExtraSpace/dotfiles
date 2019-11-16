@@ -38,21 +38,22 @@ values."
      ;; ----------------------------------------------------------------
      ;; (chrome :variables
      ;;         chrome-exec-path "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
-     docker
+     ;; octave
+     ;; rust
+     ;; ipython-notebook
+     ranger
      pdf-tools
-     octave
+     docker
      csv
      html
-     rust
      python
-     ipython-notebook
      yaml
      javascript
-     ivy
+     helm
      haskell
      (auto-completion :variables
-                      auto-completion-enable-help-tooltip t
-                      auto-completion-enable-snippets-in-popup t)
+                      auto-completion-enable-help-tooltip nil
+                      auto-completion-enable-snippets-in-popup nil)
      better-defaults
      emacs-lisp
      ibuffer
@@ -76,9 +77,8 @@ values."
             latex-enable-folding t)
      (osx :variables
           osx-use-option-as-meta t
-          mac-right-option-modifier nil
           osx-dictionary-dictionary-choice "English")
-     ;; syntax-checking
+     syntax-checking
      ;; version-control
      )
 
@@ -86,12 +86,16 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(polymode
+   dotspacemacs-additional-packages '(fold-this
+                                      nord-theme
+                                      doom-themes
+                                      polymode
                                       poly-R
                                       poly-markdown
                                       poly-noweb
                                       poly-org
                                       olivetti
+                                      focus
                                       (px :location (recipe :fetcher github :repo "aaptel/preview-latex")))
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -165,18 +169,29 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-light
-                         spacemacs-dark
-                         soft-stone)
+   dotspacemacs-themes '(nord
+                         spacemacs-light
+                         white-sand
+                         soft-stone
+                         madhat2r
+                         spacemacs-dark)
+   ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
+   ;; `all-the-icons', `custom', `vim-powerline' and `vanilla'. The first three
+   ;; are spaceline themes. `vanilla' is the default Emacs mode-line. `custom'
+   ;; is a user defined theme, refer to DOCUMENTATION.org for more info on how
+   ;; to create your own spaceline theme. Value can be a symbol or list with
+   ;; additional properties.
+   ;; (default '(spacemacs :seperator wave :seperator-scale 1.5))
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 17
-                               :weight normal
+   dotspacemacs-default-font '("Hasklig"
+                               :size 16
+                               :weight light
                                :width normal
-                               :powerline-scale 1)
+                               :powerline-scale 1.1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
@@ -263,7 +278,7 @@ values."
    dotspacemacs-fullscreen-at-startup nil
    ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
-   dotspacemacs-fullscreen-use-non-native nil
+   dotspacemacs-fullscreen-use-non-native t
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
@@ -271,11 +286,11 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-active-transparency 90
+   dotspacemacs-active-transparency 0
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-inactive-transparency 90
+   dotspacemacs-inactive-transparency 0
    ;; If non nil show the titles of transient states. (default t)
    dotspacemacs-show-transient-state-title t
    ;; If non nil show the color guide hint for transient state keys. (default t)
@@ -340,19 +355,24 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; Configuration for treemacs
+  (add-hook 'treemacs-mode-hook 'treemacs--disable-fringe-indicator)
+
   ;; Settings for org-mode
   (with-eval-after-load 'org
     ;; Load org-setting here
     (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
-    (setq org-ref-default-bibliography '("/Users/therimalaya/Dropbox/Papers/BibTex/03-Prediction-Comparison.bib")
-          org-ref-pdf-directory "/Users/therimalaya/Dropbox/Papers/References/"
-          bibtex-completion-pdf-field "file"
-          bibtex-completion-format-citation-functions
-          '((default . bibtex-completion-format-citation-default)
-            (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
-            (latex-mode . bibtex-completion-format-citation-cite)
-            (org-mode . bibtex-completion-format-citation-org-link-to-PDF))
-          )
+    ;; (setq org-ref-default-bibliography '("/Users/therimalaya/Dropbox/Papers/BibTex/03-Prediction-Comparison.bib")
+    (setq
+     org-ref-default-bibliography '("~/Dropbox/Papers/00-Thesis/References.bib")
+     org-ref-pdf-directory "/Users/therimalaya/Dropbox/Papers/References/"
+     bibtex-completion-pdf-field "file"
+     bibtex-completion-format-citation-functions
+     '((default . bibtex-completion-format-citation-default)
+       (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+       (latex-mode . bibtex-completion-format-citation-cite)
+       (org-mode . bibtex-completion-format-citation-org-link-to-PDF))
+     )
     (setq org-startup-indented t)
     (org-babel-do-load-languages
      'org-babel-load-languages
@@ -361,7 +381,7 @@ you should place your code here."
     )
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
 
-  ;; Initilize outline minor mode along with AucTex (LaTeX) mode
+  ;; Initialize outline minor mode along with AucTex (LaTeX) mode
   (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
 
   ;; Making PDF-tool as default PDF viewer
@@ -380,11 +400,6 @@ you should place your code here."
 
   ;; open r-markdown in markdown mode
   (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . markdown-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.rmd\\'" . markdown-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.Snw" . poly-noweb+r-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.Rnw" . poly-noweb+r-mode))
   (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
   ;; Custom function to insert new chunk in r-markdown mode
@@ -397,8 +412,39 @@ you should place your code here."
       (insert "```\n")
       (previous-line)))
 
+  ;; Settings for Ranger
+  (setq ranger-show-hidden t)
+  (ranger-override-dired-mode t)
+
+  ;; Fix problem with expansion with mac keyboard
+  (setq-default mac-right-option-modifier nil)
+0
+  ;; Fix for completion when sidebar is open
+  (with-eval-after-load "helm"
+    (defun helm-persistent-action-display-window (&optional split-onewindow)
+      "Return the window that will be used for persistent action.
+        If SPLIT-ONEWINDOW is non-`nil' window is split in persistent action."
+      (with-helm-window
+        (setq helm-persistent-action-display-window (get-mru-window)))))
+
   ;; Key-binding for inserting new rmarkdown chunk
   (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "iC" 'rmarkdown-new-chunk)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "np" 'markdown-narrow-to-page)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "nb" 'markdown-narrow-to-block)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "ns" 'markdown-narrow-to-subtree)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "nr" 'narrow-to-region)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "nf" 'narrow-to-defun)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "nw" 'widen)
+
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "lj" 'markdown-move-list-item-down)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "lk" 'markdown-move-list-item-up)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "lh" 'markdown-promote-list-item)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "ll" 'markdown-demote-list-item)
+
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "hj" 'markdown-move-subtree-down)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "hk" 'markdown-move-subtree-item-up)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "hh" 'markdown-promote-subtree)
+  (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "hl" 'markdown-demote-subtree)
 
   ;; add outline minor mode in markdown-mode
   (add-hook 'markdown-mode-hook 'outline-minor-mode)
@@ -416,8 +462,9 @@ you should place your code here."
 
   ;; Fixing Environment issue with R
   (setenv "LANG" "en_US.UTF-8")
-  (exec-path-from-shell-copy-env "LC_ALL")
-  (exec-path-from-shell-copy-env "LANG")
+  (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.11/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig:/usr/local/Cellar/libffi/3.2.1/lib/pkgconfig/")
+  ;; (exec-path-from-shell-copy-env "LC_ALL")
+  ;; (exec-path-from-shell-copy-env "LANG")
 
   ;; Automatically close buffer if successful
   (setq compilation-finish-function
@@ -435,23 +482,55 @@ you should place your code here."
 
   ;; Olivetti mode keybinding
   (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "to" 'olivetti-mode)
+  ;; (add-hook 'poly-markdown+r-mode-hook (lambda() (olivetti-mode t)))
+  (set 'olivetti-minimum-body-width 90)
   ;; (setq-mode-local 'markdown-mode 'olivetti-body-width 90)
+
+  ;; Prettify mode
+  (global-prettify-symbols-mode 1)
+  (load-file "~/.emacs.d/private/fira-code-hack.el")
+
+  ;; Fold-this bindings
+  (spacemacs/set-leader-keys "of" 'fold-this)
+
+  ;; Tab space for different modes
+  (setq default-tab-width 2)
+
+  ;; setting up common lisp path
+  (setq inferior-lisp-program "/usr/local/bin/clisp")
+
+  ;; Fix for evil search trigger
+  (defun kill-minibuffer ()
+    (interactive)
+    (when (windowp (active-minibuffer-window))
+      (evil-ex-search-exit)))
+
+  (add-hook 'mouse-leave-buffer-hook #'kill-minibuffer)
+
+  ;; Fix Issue with Non-character input-error warning
+  ;; https://github.com/syl20bnr/spacemacs/issues/5554
+  (defun ask-user-about-lock (file other-user)
+    "A value of t says to grab the lock on the file."
+    t)
 
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(package-selected-packages
    (quote
-    (dockerfile-mode docker docker-tramp pdf-tools helm-bibtex parsebib helm helm-core anaconda-mode tern company counsel ess iedit smartparens evil flyspell-correct yasnippet projectile magit git-commit ghub with-editor org-plus-contrib hydra markdown-mode polymode ivy olivetti zenburn-theme zen-and-art-theme yapfify yaml-mode ws-butler writeroom-mode winum white-sand-theme which-key wgrep web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smex smeargle slim-mode seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rebecca-theme rainbow-delimiters railscasts-theme racer pyvenv pytest pyenv-mode py-isort px purple-haze-theme pug-mode professional-theme popwin poly-org poly-R planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy paradox pandoc-mode ox-twbs ox-pandoc ox-gfm osx-trash osx-dictionary orgit organic-green-theme org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme mwim mustang-theme move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme launchctl json-mode js2-refactor js-doc jbeans-theme jazz-theme ivy-hydra ir-black-theme intero inkpot-theme indent-guide imenu-list ibuffer-projectile hy-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-make hc-zenburn-theme haskell-snippets gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme fuzzy flyspell-correct-ivy flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu ess-smart-equals ess-R-data-view espresso-theme emmet-mode elisp-slime-nav ein dumb-jump dracula-theme django-theme diminish darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode counsel-projectile company-web company-tern company-statistics company-quickhelp company-ghci company-ghc company-cabal company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode cmm-mode clues-theme clean-aindent-mode cherry-blossom-theme cargo busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ac-ispell))))
+    (highlight simple-httpd zenburn-theme yaml-mode which-key web-mode use-package toc-org subatomic-theme solarized-theme sass-mode poly-org poly-R poly-noweb poly-markdown polymode persp-mode paradox pandoc-mode orgit org-ref pdf-tools ivy org-pomodoro alert org-mime org-download org-bullets olivetti monokai-theme lorem-ipsum live-py-mode link-hint js2-refactor intero inkpot-theme hydra lv hy-mode hl-todo helm-swoop helm-projectile helm-make helm-descbinds helm-company helm-bibtex gruvbox-theme google-translate git-timemachine git-link fold-this focus eyebrowse expand-region exec-path-from-shell evil-unimpaired evil-surround evil-nerd-commenter evil-mc evil-matchit evil-magit dumb-jump doom-themes dockerfile-mode docker tablist darktooth-theme darkokai-theme cyberpunk-theme company-ghci color-theme-sanityinc-tomorrow biblio biblio-core auto-yasnippet apropospriate-theme alect-themes ace-window ace-link avy anaconda-mode company ess julia-mode iedit smartparens evil flycheck flyspell-correct haskell-mode yasnippet request helm helm-core magit transient git-commit with-editor async markdown-mode projectile ht org-plus-contrib pythonic js2-mode powerline dash nord-theme zen-and-art-theme yapfify ws-butler winum white-sand-theme web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme spinner spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode seti-theme scss-mode reverse-theme reveal-in-osx-finder restart-emacs rebecca-theme ranger rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-isort px purple-haze-theme pug-mode professional-theme popwin planet-theme pkg-info pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pbcopy parsebib ox-twbs ox-pandoc ox-gfm osx-trash osx-dictionary organic-green-theme org-projectile org-present open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme mwim mustang-theme multiple-cursors move-text monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme log4e livid-mode linum-relative light-soap-theme launchctl key-chord json-mode js-doc jbeans-theme jazz-theme ir-black-theme indent-guide imenu-list ibuffer-projectile hungry-delete htmlize hlint-refactor hindent highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-themes helm-pydoc helm-mode-manager helm-hoogle helm-gitignore helm-flx helm-css-scss helm-c-yasnippet helm-ag hc-zenburn-theme haskell-snippets haml-mode gruber-darker-theme grandshell-theme goto-chg gotham-theme golden-ratio gnuplot gntp gitconfig-mode gitattributes-mode git-messenger gh-md gandalf-theme fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery f exotica-theme evil-visualstar evil-visual-mark-mode evil-tutor evil-search-highlight-persist evil-numbers evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu ess-smart-equals ess-R-data-view espresso-theme emmet-mode elisp-slime-nav dracula-theme docker-tramp django-theme diminish darkmine-theme darkburn-theme dakrone-theme cython-mode csv-mode company-web company-tern company-statistics company-ghc company-cabal company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-solarized coffee-mode cmm-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme autothemer auto-highlight-symbol auto-dictionary auto-compile anti-zenburn-theme ample-zen-theme ample-theme aggressive-indent afternoon-theme adaptive-wrap ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((((class color) (min-colors 89)) (:foreground "#D8DEE9" :background "#2E3440")))))
