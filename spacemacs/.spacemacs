@@ -38,10 +38,12 @@ values."
      ;; ----------------------------------------------------------------
      ;; (chrome :variables
      ;;         chrome-exec-path "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+     (ranger :variables
+             ranger-show-preview t)
+     docker
      ;; octave
      ;; rust
      ;; ipython-notebook
-     ranger
      pdf-tools
      docker
      csv
@@ -95,47 +97,50 @@ values."
                                       poly-markdown
                                       poly-noweb
                                       poly-org
+                                      sphinx-doc
+                                      nord-theme
+                                      doom-themes
                                       olivetti
                                       focus
                                       (px :location (recipe :fetcher github :repo "aaptel/preview-latex")))
-   ;; A list of packages that cannot be updated.
+   ;; a list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
-   ;; A list of packages that will not be installed and loaded.
+   ;; a list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '()
-   ;; Defines the behaviour of Spacemacs when installing packages.
-   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+   ;; defines the behaviour of spacemacs when installing packages.
+   ;; possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
    ;; unused packages as well as their unused dependencies.
    ;; `used-but-keep-unused' installs only the used packages but won't uninstall
    ;; them if they become unused. `all' installs *all* packages supported by
-   ;; Spacemacs and never uninstall them. (default is `used-only')
+   ;; spacemacs and never uninstall them. (default is `used-only')
    dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
-  "Initialization function.
-This function is called at the very startup of Spacemacs initialization
+  "initialization function.
+this function is called at the very startup of spacemacs initialization
 before layers configuration.
-You should not put any user code in there besides modifying the variable
+you should not put any user code in there besides modifying the variable
 values."
-  ;; This setq-default sexp is an exhaustive list of all the supported
+  ;; this setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
-   ;; If non nil ELPA repositories are contacted via HTTPS whenever it's
-   ;; possible. Set it to nil if you have no way to use HTTPS in your
+   ;; if non nil elpa repositories are contacted via https whenever it's
+   ;; possible. set it to nil if you have no way to use https in your
    ;; environment, otherwise it is strongly recommended to let it set to t.
-   ;; This variable has no effect if Emacs is launched with the parameter
+   ;; this variable has no effect if emacs is launched with the parameter
    ;; `--insecure' which forces the value of this variable to nil.
    ;; (default t)
    dotspacemacs-elpa-https t
-   ;; Maximum allowed time in seconds to contact an ELPA repository.
+   ;; maximum allowed time in seconds to contact an elpa repository.
    dotspacemacs-elpa-timeout 5
-   ;; If non nil then spacemacs will check for updates at startup
-   ;; when the current branch is not `develop'. Note that checking for
-   ;; new versions works via git commands, thus it calls GitHub services
-   ;; whenever you start Emacs. (default nil)
+   ;; if non nil then spacemacs will check for updates at startup
+   ;; when the current branch is not `develop'. note that checking for
+   ;; new versions works via git commands, thus it calls github services
+   ;; whenever you start emacs. (default nil)
    dotspacemacs-check-for-update nil
-   ;; If non-nil, a form that evaluates to a package directory. For example, to
-   ;; use different package directories for different Emacs versions, set this
+   ;; if non-nil, a form that evaluates to a package directory. for example, to
+   ;; use different package directories for different emacs versions, set this
    ;; to `emacs-version'.
    dotspacemacs-elpa-subdirectory nil
    ;; One of `vim', `emacs' or `hybrid'.
@@ -172,6 +177,7 @@ values."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(nord
                          spacemacs-light
+                         spacemacs-dark
                          white-sand
                          soft-stone
                          madhat2r
@@ -188,9 +194,9 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Hasklig"
-                               :size 16
-                               :weight light
+   dotspacemacs-default-font '("Space Mono for Powerline"
+                               :size 14
+                               :weight normal
                                :width normal
                                :powerline-scale 1.1)
    ;; The leader key
@@ -463,7 +469,6 @@ you should place your code here."
 
   ;; Fixing Environment issue with R
   (setenv "LANG" "en_US.UTF-8")
-  (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.11/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig:/usr/local/Cellar/libffi/3.2.1/lib/pkgconfig/")
   ;; (exec-path-from-shell-copy-env "LC_ALL")
   ;; (exec-path-from-shell-copy-env "LANG")
 
@@ -486,6 +491,9 @@ you should place your code here."
   ;; (add-hook 'poly-markdown+r-mode-hook (lambda() (olivetti-mode t)))
   (set 'olivetti-minimum-body-width 90)
   ;; (setq-mode-local 'markdown-mode 'olivetti-body-width 90)
+
+  ;; Make ranger default
+  (ranger-override-dired-mode t)
 
   ;; Prettify mode
   (global-prettify-symbols-mode 1)
@@ -536,4 +544,3 @@ you should place your code here."
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
-
