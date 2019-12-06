@@ -51,6 +51,7 @@ values."
      python
      yaml
      javascript
+     react
      helm
      haskell
      (auto-completion :variables
@@ -515,11 +516,29 @@ you should place your code here."
 
   (add-hook 'mouse-leave-buffer-hook #'kill-minibuffer)
 
-  ;; Fix Issue with Non-character input-error warning
-  ;; https://github.com/syl20bnr/spacemacs/issues/5554
-  (defun ask-user-about-lock (file other-user)
-    "A value of t says to grab the lock on the file."
-    t)
+  ;; React Configuration
+  (setq-default
+   ;; js2-mode
+   js2-basic-offset 2
+   ;; web-mode
+   css-indent-offset 2
+   web-mode-markup-indent-offset 2
+   web-mode-css-indent-offset 2
+   web-mode-code-indent-offset 2
+   web-mode-attr-indent-offset 2)
+
+  (with-eval-after-load 'web-mode
+    (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
+
+  ;; Some Shortcut for React Mode
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "we" 'web-mode-element-end)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "wb" 'web-mode-element-beginning)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "ff" 'web-mode-fold-or-unfold)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "fl" 'hs-hide-level)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "fbs" 'hs-show-block)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "fbh" 'hs-hide-block)
 
   )
 
