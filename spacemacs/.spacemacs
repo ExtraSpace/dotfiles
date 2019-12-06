@@ -49,6 +49,7 @@ values."
      python
      yaml
      javascript
+     react
      helm
      haskell
      (auto-completion :variables
@@ -507,30 +508,32 @@ you should place your code here."
 
   (add-hook 'mouse-leave-buffer-hook #'kill-minibuffer)
 
-  ;; Fix Issue with Non-character input-error warning
-  ;; https://github.com/syl20bnr/spacemacs/issues/5554
-  (defun ask-user-about-lock (file other-user)
-    "A value of t says to grab the lock on the file."
-    t)
+  ;; React Configuration
+  (setq-default
+   ;; js2-mode
+   js2-basic-offset 2
+   ;; web-mode
+   css-indent-offset 2
+   web-mode-markup-indent-offset 2
+   web-mode-css-indent-offset 2
+   web-mode-code-indent-offset 2
+   web-mode-attr-indent-offset 2)
+
+  (with-eval-after-load 'web-mode
+    (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
+
+  ;; Some Shortcut for React Mode
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "we" 'web-mode-element-end)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "wb" 'web-mode-element-beginning)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "ff" 'web-mode-fold-or-unfold)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "fl" 'hs-hide-level)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "fbs" 'hs-show-block)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "fbh" 'hs-hide-block)
 
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
- '(package-selected-packages
-   (quote
-    (highlight simple-httpd zenburn-theme yaml-mode which-key web-mode use-package toc-org subatomic-theme solarized-theme sass-mode poly-org poly-R poly-noweb poly-markdown polymode persp-mode paradox pandoc-mode orgit org-ref pdf-tools ivy org-pomodoro alert org-mime org-download org-bullets olivetti monokai-theme lorem-ipsum live-py-mode link-hint js2-refactor intero inkpot-theme hydra lv hy-mode hl-todo helm-swoop helm-projectile helm-make helm-descbinds helm-company helm-bibtex gruvbox-theme google-translate git-timemachine git-link fold-this focus eyebrowse expand-region exec-path-from-shell evil-unimpaired evil-surround evil-nerd-commenter evil-mc evil-matchit evil-magit dumb-jump doom-themes dockerfile-mode docker tablist darktooth-theme darkokai-theme cyberpunk-theme company-ghci color-theme-sanityinc-tomorrow biblio biblio-core auto-yasnippet apropospriate-theme alect-themes ace-window ace-link avy anaconda-mode company ess julia-mode iedit smartparens evil flycheck flyspell-correct haskell-mode yasnippet request helm helm-core magit transient git-commit with-editor async markdown-mode projectile ht org-plus-contrib pythonic js2-mode powerline dash nord-theme zen-and-art-theme yapfify ws-butler winum white-sand-theme web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme spinner spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode seti-theme scss-mode reverse-theme reveal-in-osx-finder restart-emacs rebecca-theme ranger rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-isort px purple-haze-theme pug-mode professional-theme popwin planet-theme pkg-info pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pbcopy parsebib ox-twbs ox-pandoc ox-gfm osx-trash osx-dictionary organic-green-theme org-projectile org-present open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme mwim mustang-theme multiple-cursors move-text monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme log4e livid-mode linum-relative light-soap-theme launchctl key-chord json-mode js-doc jbeans-theme jazz-theme ir-black-theme indent-guide imenu-list ibuffer-projectile hungry-delete htmlize hlint-refactor hindent highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-themes helm-pydoc helm-mode-manager helm-hoogle helm-gitignore helm-flx helm-css-scss helm-c-yasnippet helm-ag hc-zenburn-theme haskell-snippets haml-mode gruber-darker-theme grandshell-theme goto-chg gotham-theme golden-ratio gnuplot gntp gitconfig-mode gitattributes-mode git-messenger gh-md gandalf-theme fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery f exotica-theme evil-visualstar evil-visual-mark-mode evil-tutor evil-search-highlight-persist evil-numbers evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu ess-smart-equals ess-R-data-view espresso-theme emmet-mode elisp-slime-nav dracula-theme docker-tramp django-theme diminish darkmine-theme darkburn-theme dakrone-theme cython-mode csv-mode company-web company-tern company-statistics company-ghc company-cabal company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-solarized coffee-mode cmm-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme autothemer auto-highlight-symbol auto-dictionary auto-compile anti-zenburn-theme ample-zen-theme ample-theme aggressive-indent afternoon-theme adaptive-wrap ace-jump-helm-line ac-ispell))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((((class color) (min-colors 89)) (:foreground "#D8DEE9" :background "#2E3440")))))
