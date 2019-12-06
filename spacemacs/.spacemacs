@@ -102,6 +102,7 @@ values."
                                       doom-themes
                                       olivetti
                                       focus
+                                      react-snippets
                                       (px :location (recipe :fetcher github :repo "aaptel/preview-latex")))
    ;; a list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -497,7 +498,7 @@ you should place your code here."
 
   ;; Prettify mode
   (global-prettify-symbols-mode 1)
-  (load-file "~/.emacs.d/private/fira-code-hack.el")
+  ;; (load-file "~/.emacs.d/private/fira-code-hack.el")
 
   ;; Fold-this bindings
   (spacemacs/set-leader-keys "of" 'fold-this)
