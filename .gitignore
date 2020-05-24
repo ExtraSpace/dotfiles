@@ -1,4 +1,8 @@
 .emacs.d
 .zshrc
 .vim/plugged
+.vim/pack
+
+
+
 

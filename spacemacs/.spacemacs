@@ -61,8 +61,7 @@ values."
      emacs-lisp
      ibuffer
      git
-     (markdown :variables
-               markdown-live-preview-engine 'vmd)
+     markdown
      pandoc
      imenu-list
      (org :variables
@@ -107,7 +106,7 @@ values."
    ;; a list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; a list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(company-tern)
    ;; defines the behaviour of spacemacs when installing packages.
    ;; possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -176,11 +175,11 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(nord
+   dotspacemacs-themes '(soft-stone
+                         nord
                          spacemacs-light
                          spacemacs-dark
                          white-sand
-                         soft-stone
                          madhat2r
                          spacemacs-dark)
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -195,8 +194,8 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Space Mono for Powerline"
-                               :size 14
+   dotspacemacs-default-font '("Inconsolata for Powerline Medium"
+                               :size 15
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -422,6 +421,7 @@ you should place your code here."
 
   ;; Settings for Ranger
   (setq ranger-show-hidden t)
+  (setq ranger-preview-file t)
   (ranger-override-dired-mode t)
 
   ;; Fix problem with expansion with mac keyboard
@@ -541,7 +541,11 @@ you should place your code here."
   (spacemacs/set-leader-keys-for-major-mode 'react-mode "fbs" 'hs-show-block)
   (spacemacs/set-leader-keys-for-major-mode 'react-mode "fbh" 'hs-hide-block)
 
+  ;; Stop displaying exported file from poly-mode
+  (setq polymode-display-output-file nil)
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+
