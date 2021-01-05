@@ -8,7 +8,7 @@ set guioptions=-r
 
 " Interface Options ----------
 vnoremap <leader>y "+y
-map <leader>p "+P
+map <leader>P "+P
 set number relativenumber
 set nu rnu
 set wildmenu
@@ -48,9 +48,13 @@ set linebreak
 syntax enable
 set wrap
 
+" VimGrep bindings -----------
+nmap <silent> <C-N> :cn<CR>zv
+nmap <silent> <C-P> :cp<CR>zv
+
 " Folding Options ----------
 set foldnestmax=3
-set foldmethod=syntax
+set foldmethod=indent
 set nofoldenable
 let javascript_fold=1     " Javascript
 let r_syntax_folding=1    " R
@@ -74,7 +78,9 @@ map <leader>f :NERDTreeToggle<CR>
 let NERDTreeMinimalUI=1
 let NERDTreeDirArrows=1
 autocmd bufenter * if (winnr("$")==1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
- 
+let NERDTreeIgnore=['node_module*', '\.cache']
+nnoremap <silent> <Leader>v :NERDTreeFind<CR>
+
 
 " Ranger Setup ---------
 map <leader>r :Ranger<CR>
@@ -121,15 +127,43 @@ let g:UltiSnipsJumpBackwardTrigger="<C-p>"
 nnoremap <leader>es :UltiSnipsEdit<CR>
 
 " LaTeX Configuration ----------------------
-let g:tex_flavor='latex'
+filetype plugin on
+filetype indent on
 let g:vimtex_quickfix_mode=0
-set conceallevel=1
 let g:tex_conceal='abdmg'
+set conceallevel=1
 hi Conceal ctermbg=none
+let g:Tex_DefaultTargetFormat='pdf'
+let g:Tex_CompileRule_pdf = 'latexmk -pdf'
+let g:TCLevel=4
+let g:tex_flavor='latex'
+let g:Tex_GotoError=0
 
 " Easily moving between windows --------------
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
 nnoremap <C-H> <C-W>h
+
+" Fuzzy Find Settings --------------
+nnoremap <silent> <leader><leader> :Files<CR>
+let g:fzf_preview_window='right:60%'
+let g:fzf_buffers_jump=1
+let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
+" Mapping selecting mappings
+nmap <leader><tab> <plug>(fzf-maps-n)
+xmap <leader><tab> <plug>(fzf-maps-x)
+omap <leader><tab> <plug>(fzf-maps-o)
+" Insert mode completion
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+imap <c-x><c-l> <plug>(fzf-complete-line)
+
+" Custom shell script ----------------------------
+" Rmarkdown build
+" map <F5> :!R -e 'rmarkdown::render("%:t")'<CR><CR>
+
+" Build using Makefile
+nnoremap <F5> :w <CR> :!make <CR><CR>
+map <F6> :w <CR> :!make NAME="%:t"<CR><CR> :!xdg-open "%:t:r.pdf"&<CR><CR>
 

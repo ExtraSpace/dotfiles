@@ -41,5 +41,6 @@ Plug 'vim-pandoc/vim-pandoc-syntax'
 Plug 'vim-pandoc/vim-rmarkdown'
 Plug 'vim-scripts/Tabmerge'
 Plug 'yuezk/vim-js'
+Plug 'vim-latex/vim-latex'
 
 call plug#end()
