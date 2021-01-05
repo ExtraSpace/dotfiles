@@ -60,8 +60,7 @@ values."
      emacs-lisp
      ibuffer
      git
-     (markdown :variables
-               markdown-live-preview-engine 'vmd)
+     markdown
      pandoc
      imenu-list
      (org :variables
@@ -101,12 +100,17 @@ values."
                                       doom-themes
                                       olivetti
                                       focus
+                                      react-snippets
                                       (px :location (recipe :fetcher github :repo "aaptel/preview-latex")))
    ;; a list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; a list of packages that will not be installed and loaded.
+<<<<<<< HEAD
    dotspacemacs-excluded-packages '(company-tern
                                     cl)
+=======
+   dotspacemacs-excluded-packages '(company-tern)
+>>>>>>> 3194d11cbbff9a3c45723c8d816e54636b4cc9dc
    ;; defines the behaviour of spacemacs when installing packages.
    ;; possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -175,11 +179,11 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(nord
+   dotspacemacs-themes '(soft-stone
+                         nord
                          spacemacs-light
                          spacemacs-dark
                          white-sand
-                         soft-stone
                          madhat2r
                          spacemacs-dark)
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -194,8 +198,13 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
+<<<<<<< HEAD
    dotspacemacs-default-font '("Victor Mono"
                                :size 16
+=======
+   dotspacemacs-default-font '("Inconsolata for Powerline Medium"
+                               :size 15
+>>>>>>> 3194d11cbbff9a3c45723c8d816e54636b4cc9dc
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -421,6 +430,7 @@ you should place your code here."
 
   ;; Settings for Ranger
   (setq ranger-show-hidden t)
+  (setq ranger-preview-file t)
   (ranger-override-dired-mode t)
 
   ;; Fix problem with expansion with mac keyboard
@@ -496,7 +506,11 @@ you should place your code here."
   (ranger-override-dired-mode t)
 
   ;; Prettify mode
+<<<<<<< HEAD
   ;; (global-prettify-symbols-mode 1)
+=======
+  (global-prettify-symbols-mode 1)
+>>>>>>> 3194d11cbbff9a3c45723c8d816e54636b4cc9dc
   ;; (load-file "~/.emacs.d/private/fira-code-hack.el")
 
   ;; Fold-this bindings
@@ -540,7 +554,27 @@ you should place your code here."
   (spacemacs/set-leader-keys-for-major-mode 'react-mode "fl" 'hs-hide-level)
   (spacemacs/set-leader-keys-for-major-mode 'react-mode "fbh" 'hs-hide-block)
 
+  ;; Stop displaying exported file from poly-mode
+  (setq polymode-display-output-file nil)
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
+ '(package-selected-packages
+   (quote
+    (packed hydra poly-noweb poly-markdown ht org-category-capture alert log4e gntp skewer-mode simple-httpd multiple-cursors haml-mode gitignore-mode ctable json-reformat autothemer web-completion-data ghc biblio-core zenburn-theme yaml-mode which-key web-mode uuidgen use-package tern tangotango-theme solarized-theme ranger rainbow-delimiters pyenv-mode popwin poly-org persp-mode ox-twbs orgit organic-green-theme org-ref pdf-tools ivy lv org-mime org-download olivetti nord-theme monokai-theme moe-theme mmm-mode material-theme markdown-toc live-py-mode link-hint launchctl jbeans-theme inkpot-theme ibuffer-projectile hy-mode dash-functional hungry-delete htmlize hl-todo hindent highlight-parentheses helm-swoop helm-projectile helm-make helm-c-yasnippet helm-ag gruvbox-theme gotham-theme google-translate git-timemachine git-link flycheck-pos-tip flycheck-haskell fill-column-indicator eyebrowse exec-path-from-shell evil-unimpaired evil-surround evil-nerd-commenter evil-matchit evil-magit evil-iedit-state iedit evil-anzu anzu dumb-jump dracula-theme doom-themes docker darkokai-theme cyberpunk-theme company-auctex column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized bind-key auto-highlight-symbol auctex alect-themes aggressive-indent ace-window ace-link auto-complete avy anaconda-mode pythonic ess smartparens evil goto-chg undo-tree flyspell-correct bibtex-completion parsebib request helm popup helm-core haskell-mode company flycheck json-snatcher magit-popup magit git-commit with-editor transient projectile org-plus-contrib markdown-mode polymode yasnippet js2-mode powerline dash zen-and-art-theme yapfify ws-butler winum white-sand-theme web-beautify volatile-highlights vi-tilde-fringe unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org tao-theme tango-plus-theme tango-2-theme tagedit tablist sunny-day-theme sublime-themes subatomic256-theme subatomic-theme sphinx-doc spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rebecca-theme react-snippets railscasts-theme pyvenv pytest py-isort px purple-haze-theme pug-mode professional-theme pos-tip poly-R planet-theme pkg-info pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pbcopy paradox pandoc-mode ox-pandoc ox-gfm osx-trash osx-dictionary org-projectile org-present org-pomodoro org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme mwim mustang-theme move-text monochrome-theme molokai-theme minimal-theme majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode linum-relative light-soap-theme key-chord json-mode js2-refactor js-doc jazz-theme ir-black-theme intero indent-guide imenu-list hlint-refactor highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-themes helm-pydoc helm-mode-manager helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-bibtex hc-zenburn-theme haskell-snippets gruber-darker-theme grandshell-theme golden-ratio gnuplot gitconfig-mode gitattributes-mode git-messenger gh-md gandalf-theme fuzzy fold-this focus flyspell-correct-helm flx-ido flatui-theme flatland-theme farmhouse-theme fancy-battery f expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-tutor evil-search-highlight-persist evil-numbers evil-mc evil-lisp-state evil-indent-plus evil-exchange evil-escape evil-ediff evil-args eval-sexp-fu ess-smart-equals ess-R-data-view espresso-theme emmet-mode elisp-slime-nav dockerfile-mode docker-tramp django-theme diminish darktooth-theme darkmine-theme darkburn-theme dakrone-theme cython-mode csv-mode company-web company-statistics company-ghci company-ghc company-cabal company-anaconda coffee-mode cmm-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme biblio badwolf-theme auto-yasnippet auto-dictionary auto-compile async apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme afternoon-theme adaptive-wrap ace-jump-helm-line ac-ispell))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:background nil)))))
