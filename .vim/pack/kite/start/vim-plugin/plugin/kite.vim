@@ -1,11 +1,30 @@
-if exists('g:loaded_kite') || &cp || v:version < 700
+if exists('g:loaded_kite') || &cp
   finish
 endif
+
+if has('nvim')
+  if !has('nvim-0.3')
+    echoerr 'Kite requires Neovim 0.3 or greater'
+    finish
+  endif
+else
+  if v:version < 800 || !has('patch-8.0.0027')
+    echoerr 'Kite requires Vim 8.0.0027 or greater'
+    finish
+  endif
+endif
+
+
 let g:loaded_kite = 1
 
 
 filetype on
 
+
+" The list of languages / file types for which we want Kite's completions.
+if !exists('g:kite_supported_languages')
+  let g:kite_supported_languages = ['python']
+endif
 
 if !exists('g:kite_auto_complete')
   let g:kite_auto_complete = 1
@@ -62,19 +81,21 @@ augroup Kite
   autocmd!
   autocmd BufEnter * call kite#bufenter()
   autocmd VimEnter * call kite#configure_completeopt()
-  autocmd VimEnter * nested if &filetype !~# '^git' | call kite#onboarding#call(0) | endif
+  autocmd VimEnter * nested if kite#utils#kite_running() && &filetype !~# '^git' | call kite#onboarding#call(0) | endif
 augroup END
 
 
 nnoremap <silent> <Plug>(kite-docs) :call kite#docs#docs()<CR>
 
-command! KiteDocsAtCursor         call kite#docs#docs()
-command! KiteOpenCopilot          call kite#client#copilot()
-command! KiteGeneralSettings      call kite#client#settings()
-command! KitePermissions          call kite#client#permissions()
-command! KiteTutorial             call kite#onboarding#call(1)
-command! KiteDisableAutoStart     call kite#disable_auto_start()
-command! KiteEnableAutoStart      call kite#enable_auto_start()
-command! KiteShowPopularPatterns  call kite#signature#show_popular_patterns()
-command! KiteHidePopularPatterns  call kite#signature#hide_popular_patterns()
-
+command! KiteDocsAtCursor                        call kite#docs#docs()
+command! KiteOpenCopilot                         call kite#client#copilot()
+command! KiteGeneralSettings                     call kite#client#settings()
+command! KitePermissions                         call kite#client#permissions()
+command! KiteTutorial                            call kite#onboarding#call(1)
+command! KiteDisableAutoStart                    call kite#disable_auto_start()
+command! KiteEnableAutoStart                     call kite#enable_auto_start()
+command! KiteShowPopularPatterns                 call kite#signature#show_popular_patterns()
+command! KiteHidePopularPatterns                 call kite#signature#hide_popular_patterns()
+command! KiteGotoDefinition                      call kite#hover#goto_definition()
+command! KiteFindRelatedCodeFromFileExperimental call kite#codenav#from_file()
+command! KiteFindRelatedCodeFromLineExperimental call kite#codenav#from_line()

@@ -1,5 +1,6 @@
 let s:status_poll_interval = 5 * 1000  " 5sec in milliseconds
 let s:timer = -1
+let s:watch_timer = -1
 
 if !kite#utils#windows()
   let s:kite_symbol = nr2char(printf('%d', '0x27E0'))
@@ -37,7 +38,8 @@ endfunction
 
 
 function! kite#max_file_size()
-  return 76800  " 75KB
+  " Fallback to 1MB
+  return get(b:, 'kite_max_file_size', 1048576)
 endfunction
 
 
@@ -78,6 +80,7 @@ function! s:restore_options()
   if !exists('s:pumheight') | return | endif
 
   let &pumheight   = s:pumheight
+  unlet s:pumheight
   let &updatetime  = s:updatetime
   let &shortmess   = s:shortmess
   if kite#utils#windows()
@@ -87,24 +90,39 @@ endfunction
 
 
 function! kite#bufenter()
-  if s:supported_language()
+  if kite#languages#supported_by_plugin()
     call s:launch_kited()
 
-    call s:disable_completion_plugins()
-    call s:setup_options()
-    call s:setup_events()
-    call s:setup_mappings()
+    if !kite#utils#kite_running()
+      call kite#status#status()
+      call s:start_status_timer()
 
-    setlocal completefunc=kite#completion#complete
+      call s:start_watching_for_kited()
+      return
+    endif
 
-    call kite#events#event('focus')
-    call kite#status#status()
-    call s:start_status_timer()
+    call s:stop_watching_for_kited()
 
-  else
-    call s:restore_options()
-    call s:stop_status_timer()
-  endif
+    if kite#languages#supported_by_kited()
+      call s:disable_completion_plugins()
+      call s:setup_options()
+      call s:setup_events()
+      call s:setup_mappings()
+      call s:set_max_file_size()
+
+      setlocal completefunc=kite#completion#complete
+
+      call kite#events#event('focus')
+      call kite#status#status()
+      call s:start_status_timer()
+
+      return
+    end
+  end
+
+  " Buffer is not a supported language.
+  call s:restore_options()
+  call s:stop_status_timer()
 endfunction
 
 
@@ -112,12 +130,14 @@ function s:setup_events()
   augroup KiteEvents
     autocmd! * <buffer>
 
-    autocmd CursorHold               <buffer> call kite#events#event('selection')
+    autocmd CursorHold,CursorHoldI   <buffer> call kite#events#event('selection')
     autocmd TextChanged,TextChangedI <buffer> call kite#events#event('edit')
     autocmd FocusGained              <buffer> call kite#events#event('focus')
 
     autocmd InsertCharPre            <buffer> call kite#completion#insertcharpre()
     autocmd TextChangedI             <buffer> call kite#completion#autocomplete()
+
+    autocmd CompleteDone             <buffer> call kite#completion#replace_range()
 
     if &ft == 'go'
       autocmd CompleteDone           <buffer> call kite#completion#expand_newlines()
@@ -134,30 +154,24 @@ endfunction
 
 
 function! s:setup_mappings()
-  " When the pop-up menu is closed with <C-e>, <C-y>, or <CR>,
-  " the TextChangedI event is fired again, which re-opens the
-  " pop-up menu.  To avoid this, we set a flag when one of those
-  " keys is pressed.
-  "
-  " Note the <CR> mapping can conflict with vim-endwise because vim-endwise
-  " also maps <CR>.  To work around the conflict:
-  "
-  "     let g:kite_deconflict_cr = 1
-  "
-  imap <buffer> <expr> <C-e> kite#completion#popup_exit("\<C-e>")
-  imap <buffer> <expr> <C-y> kite#completion#popup_exit("\<C-y>")
-  if exists('g:kite_deconflict_cr') && g:kite_deconflict_cr
-    imap <silent> <buffer> <CR> <C-R>=kite#completion#popup_exit('')<CR><CR>
-  else
-    imap <buffer> <expr> <CR> kite#completion#popup_exit("\<CR>")
-  endif
-
   if exists('g:kite_tab_complete')
     imap <buffer> <expr> <Tab> pumvisible() ? "\<C-y>" : "\<Tab>"
   endif
 
   if empty(maparg('K', 'n')) && !hasmapto('(kite-docs)', 'n')
     nmap <silent> <buffer> K <Plug>(kite-docs)
+  endif
+
+  if empty(maparg('<C-]>', 'n'))
+    nmap <silent> <buffer> <C-]> :KiteGotoDefinition<CR>
+  endif
+endfunction
+
+
+function! s:set_max_file_size()
+  let max_file_size = kite#client#max_file_size()
+  if max_file_size != -1
+    let b:kite_max_file_size = max_file_size
   endif
 endfunction
 
@@ -187,6 +201,28 @@ function! s:launch_kited()
 endfunction
 
 
+function! s:start_watching_for_kited()
+  if s:watch_timer == -1
+    let s:watch_timer = timer_start(s:status_poll_interval,
+          \   function('kite#activate_when_ready'),
+          \   {'repeat': -1}
+          \ )
+  else
+    call timer_pause(s:watch_timer, 0)  " unpause
+  endif
+endfunction
+
+function! kite#activate_when_ready(...)
+  if kite#utils#kite_running()
+    call kite#bufenter()
+  endif
+endfunction
+
+function! s:stop_watching_for_kited()
+  call timer_pause(s:watch_timer, 1)
+endfunction
+
+
 function! s:disable_completion_plugins()
   " coc.nvim
   if exists('g:did_coc_loaded')
@@ -208,7 +244,7 @@ function! s:disable_completion_plugins()
   endif
 
   " YouCompleteMe
-  if exists('g:loaded_youcompleteme')
+  if exists('g:loaded_youcompleteme') && !exists('g:ycm_filetype_blacklist.python')
     let g:ycm_filetype_blacklist.python = 1
     call kite#utils#warn("disabling YouCompleteMe's completions for python files")
   endif
@@ -218,10 +254,5 @@ function! s:disable_completion_plugins()
     call deoplete#disable()
     call kite#utils#warn("disabling deoplete's completions")
   endif
-endfunction
-
-
-function! s:supported_language()
-  return (&filetype == 'python' && expand('%:e') != 'pyi') || &filetype == 'go'
 endfunction
 

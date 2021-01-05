@@ -6,11 +6,13 @@ let s:onboarding_path    = '/clientapi/plugins/onboarding_file?editor=vim'
 let s:hover_path         = '/api/buffer/vim'
 let s:docs_path          = 'kite://docs/'
 let s:status_path        = '/clientapi/status?filename='
-let s:user_path          = '/clientapi/user'
+let s:languages_path     = '/clientapi/languages'
 let s:copilot_path       = 'kite://home'
 let s:counter_path       = '/clientapi/metrics/counters'
 let s:settings_path      = 'kite://settings'
 let s:permissions_path   = 'kite://settings/permissions'
+let s:max_file_size_path = '/clientapi/settings/max_file_size_kb'
+let s:codenav_path       = '/codenav/editor/related'
 
 
 function! kite#client#docs(word)
@@ -44,17 +46,6 @@ function! kite#client#counter(json, handler)
 endfunction
 
 
-function! kite#client#logged_in(handler)
-  let path = s:user_path
-  if has('channel')
-    let response = s:internal_http(path, g:kite_short_timeout)
-  else
-    let response = s:external_http(s:base_url.path, g:kite_short_timeout)
-  endif
-  return a:handler(s:parse_response(response))
-endfunction
-
-
 function! kite#client#onboarding_file(handler)
   let path = s:onboarding_path
   if has('channel')
@@ -74,6 +65,34 @@ function! kite#client#status(filename, handler)
     let response = s:external_http(s:base_url.path, g:kite_short_timeout)
   endif
   return a:handler(s:parse_response(response))
+endfunction
+
+
+function! kite#client#languages(handler)
+  let path = s:languages_path
+  if has('channel')
+    let response = s:internal_http(path, g:kite_short_timeout)
+  else
+    let response = s:external_http(s:base_url.path, g:kite_short_timeout)
+  endif
+  return a:handler(s:parse_response(response))
+endfunction
+
+
+" Returns max file size in bytes, or -1 if not available.
+function! kite#client#max_file_size()
+  let path = s:max_file_size_path
+  if has('channel')
+    let response = s:internal_http(path, g:kite_short_timeout)
+  else
+    let response = s:external_http(s:base_url.path, g:kite_short_timeout)
+  endif
+  let result = s:parse_response(response)
+  if result.status == 200
+    return result.body * 1024
+  else
+    return -1
+  endif
 endfunction
 
 
@@ -103,6 +122,17 @@ endfunction
 
 function! kite#client#completions(json, handler)
   let path = s:editor_path.'/complete'
+  if has('channel')
+    call s:async(function('s:timer_post', [path, g:kite_long_timeout, a:json, a:handler]))
+  else
+    call kite#async#execute(s:external_http_cmd(s:base_url.path, g:kite_long_timeout, 1),
+          \ function('s:parse_and_handle', [a:handler]), a:json)
+  endif
+endfunction
+
+
+function! kite#client#request_related(json, handler)
+  let path = s:codenav_path
   if has('channel')
     call s:async(function('s:timer_post', [path, g:kite_long_timeout, a:json, a:handler]))
   else
@@ -159,14 +189,14 @@ function! s:internal_http(path, timeout, ...)
           \   'callback': function('s:on_std_out', options)
           \ })
   catch /E898\|E901\|E902/
-    call kite#utils#log('Cannot open channel: '.str)
+    call kite#utils#log('| Cannot open channel: '.str)
     return ''
   endtry
 
   try
     call ch_sendraw(channel, str)
   catch /E630\|E631\|E906/
-    call kite#utils#log('Cannot send over channel: '.str)
+    call kite#utils#log('| Cannot send over channel: '.str)
     return ''
   endtry
 
@@ -227,16 +257,16 @@ endfunction
 "
 " lines - either a list (from async commands) or a string (from sync)
 function! s:parse_response(lines)
+  if empty(a:lines)
+    return {'status': 0, 'body': ''}
+  endif
+
   if type(a:lines) == v:t_string
     let lines = split(a:lines, '\r\?\n', 1)
   else
     let lines = a:lines
   endif
   call kite#utils#log(map(copy(lines), '"< ".v:val'))
-
-  if empty(a:lines)
-    return {'status': 0, 'body': ''}
-  endif
 
   if type(a:lines) == v:t_string
     let lines = split(a:lines, '\r\?\n')

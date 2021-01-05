@@ -1,5 +1,3 @@
-                                        ; -*- mode: emacs-lisp -*-
-;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
 (defun dotspacemacs/layers ()
@@ -31,6 +29,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     lua
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -44,7 +43,7 @@ values."
      ;; octave
      ;; rust
      ;; ipython-notebook
-     pdf-tools
+     pdf
      docker
      csv
      html
@@ -106,7 +105,8 @@ values."
    ;; a list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; a list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(company-tern
+                                    cl)
    ;; defines the behaviour of spacemacs when installing packages.
    ;; possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -194,8 +194,8 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Space Mono for Powerline"
-                               :size 14
+   dotspacemacs-default-font '("Victor Mono"
+                               :size 16
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -496,8 +496,8 @@ you should place your code here."
   (ranger-override-dired-mode t)
 
   ;; Prettify mode
-  (global-prettify-symbols-mode 1)
-  (load-file "~/.emacs.d/private/fira-code-hack.el")
+  ;; (global-prettify-symbols-mode 1)
+  ;; (load-file "~/.emacs.d/private/fira-code-hack.el")
 
   ;; Fold-this bindings
   (spacemacs/set-leader-keys "of" 'fold-this)
@@ -536,8 +536,8 @@ you should place your code here."
   (spacemacs/set-leader-keys-for-major-mode 'react-mode "we" 'web-mode-element-end)
   (spacemacs/set-leader-keys-for-major-mode 'react-mode "wb" 'web-mode-element-beginning)
   (spacemacs/set-leader-keys-for-major-mode 'react-mode "ff" 'web-mode-fold-or-unfold)
-  (spacemacs/set-leader-keys-for-major-mode 'react-mode "fl" 'hs-hide-level)
   (spacemacs/set-leader-keys-for-major-mode 'react-mode "fbs" 'hs-show-block)
+  (spacemacs/set-leader-keys-for-major-mode 'react-mode "fl" 'hs-hide-level)
   (spacemacs/set-leader-keys-for-major-mode 'react-mode "fbh" 'hs-hide-block)
 
   )

@@ -39,10 +39,14 @@ function! kite#utils#normalise_version(version)
     " Or use api_info().version.
     return lines[0]  " e.g. NVIM v0.2.2
   else
-    let [major, minor] = [v:version / 100, v:version % 100]
+    let [major, minor] = matchlist(lines[0], '\v(\d)\.(\d+)')[1:2]
 
     let patch_line = match(lines, ': \d')
-    let patches = substitute(split(lines[patch_line], ': ')[1], ' ', '', 'g')
+    if patch_line == -1
+      let patches = '0'
+    else
+      let patches = substitute(split(lines[patch_line], ': ')[1], ' ', '', 'g')
+    endif
     return join([major, minor, patches], '.')  " e.g. 8.1.1-582
   endif
 endfunction
@@ -89,7 +93,7 @@ endfunction
 if kite#utils#windows()
   let s:settings_dir = join([$LOCALAPPDATA, 'Kite'], s:separator)
 else
-  let s:settings_dir = join([$HOME, '.kite'], s:separator)
+  let s:settings_dir = expand('~/.kite')
 endif
 if !isdirectory(s:settings_dir)
   call mkdir(s:settings_dir, 'p')
@@ -153,7 +157,7 @@ function! s:kite_install_path()
     if !empty(path)
       return path
     endif
-    let path = exepath($HOME.'/.local/share/kite/kited')
+    let path = exepath(expand('~/.local/share/kite/kited'))
     if !empty(path)
       return path
     endif
@@ -168,7 +172,8 @@ function! kite#utils#kite_running()
   elseif kite#utils#macos()
     let [cmd, process] = ['ps -axco command', '^Kite$']
   else
-    let [cmd, process] = ['ps -axco command', '^kited$']
+    let process_name = empty($KITED_TEST_PORT) ? 'kited' : 'kited-test'
+    let [cmd, process] = ['ps -axco command', '^'.process_name.'$']
   endif
 
   return match(split(kite#async#sync(cmd), '\n'), process) > -1
@@ -193,16 +198,6 @@ function! kite#utils#launch_kited()
     call system('open -a '.path.' --args "--plugin-launch"')
   else
     silent execute '!'.path.' --plugin-launch >/dev/null 2>&1 &'
-  endif
-endfunction
-
-
-" Optional argument is response dictionary (from kite#client#parse_response).
-function! kite#utils#logged_in(...)
-  if a:0
-    return a:1.status == 200
-  else
-    return kite#client#logged_in(function('kite#utils#logged_in'))
   endif
 endfunction
 

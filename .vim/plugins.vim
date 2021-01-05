@@ -24,5 +24,6 @@ Plug 'vim-pandoc/vim-pandoc-syntax'
 Plug 'vim-pandoc/vim-rmarkdown'
 Plug 'morhetz/gruvbox'
 Plug 'sillybun/vim-repl'
+Plug 'vim-latex/vim-latex'
 
 call plug#end()

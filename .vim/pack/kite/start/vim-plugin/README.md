@@ -44,6 +44,21 @@ Alternatively, you can follow the instructions in the [DEVELOPMENT.md](https://g
 
 Once installed, the plugin will be automatically updated by Kite when necessary.
 
+### Configuring supported languages
+
+Kite supports 12 languages and counting.  By default only Python is enabled.  You can configure the languages for which Kite is enabled:
+
+```viml
+" Python, JavaScript, Go
+let g:kite_supported_languages = ['python', 'javascript', 'go']
+
+" All the languages Kite supports
+let g:kite_supported_languages = ['*']
+
+" Turn off Kite
+let g:kite_supported_languages = []
+```
+
 [Learn more about why Kite is the best autocomplete for Vim.](https://kite.com/integrations/vim/)
 
 
@@ -76,12 +91,22 @@ Normally you insert the currently selected completion option with `<C-y>`.  If y
 let g:kite_tab_complete=1
 ```
 
-Every time you enter a Python buffer the plugin updates `completeopt` as follows:
+For any kind of completion you must set 'completopt' as follows:
 
 ```viml
-set completeopt+=menuone   " show the popup menu even when there is only 1 match
-set completeopt+=noinsert  " don't insert any text until user chooses a match
-set completeopt-=longest   " don't insert the longest common text
+set completeopt+=menuone
+```
+
+For automatic completion, you also need either:
+
+```viml
+set completeopt+=noselect
+```
+
+or:
+
+```viml
+set completeopt+=noinsert
 ```
 
 To see documentation in the preview window for each completion option, copy all the lines above into your vimrc and change the preview line to:
@@ -145,6 +170,11 @@ let g:kite_documentation_continual=1
 ```
 
 
+### Goto Definition
+
+Use `<C-]>` or `:KiteGotoDefinition` to jump to a method's definition.
+
+
 ### Commands
 
 - `KiteDocsAtCursor` - show documentation for the keyword under the cursor.
@@ -154,6 +184,7 @@ let g:kite_documentation_continual=1
 - `KiteTutorial` - show a tutorial for how to use Kite with Vim.
 - `KiteEnableAutoStart` - start Kite automatically when Vim starts.
 - `KiteDisableAutoStart` - do not start Kite automatically when Vim starts.
+- `KiteGotoDefinition` - jump to a method's definition.
 
 
 
